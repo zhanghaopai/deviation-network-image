@@ -3,8 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class BinaryFocalLoss(nn.Module):
-    def __init__(self, alpha=1, gamma=2, logits=True, reduce=True):
+    def __init__(self, cuda, alpha=1, gamma=2, logits=True, reduce=True):
         super(BinaryFocalLoss, self).__init__()
+        self.cuda = cuda
         self.alpha = alpha
         self.gamma = gamma
         self.logits = logits
