@@ -18,4 +18,4 @@ def aucPerformance(mse, labels, prt=True):
     ap = average_precision_score(labels, mse)
     if prt:
         print("AUC-ROC: %.4f, AUC-PR: %.4f" % (roc_auc, ap))
-    return roc_auc, ap;
+    return roc_auc, ap
