@@ -81,7 +81,7 @@ if __name__ == '__main__':
     parser.add_argument("--epochs", type=int, default=50, help="the number of epochs")
     parser.add_argument("--ramdn_seed", type=int, default=42, help="the random seed number")
     parser.add_argument('--workers', type=int, default=4, metavar='N', help='dataloader threads')
-    parser.add_argument('--no_cuda', action='store_true', default=True, help='disables CUDA training')
+    parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument('--weight_name', type=str, default='model.pkl', help="the name of model weight")
     parser.add_argument('--dataset_root', type=str, default='./data/mvtec_anomaly_detection', help="dataset root")
     parser.add_argument('--experiment_dir', type=str, default='./experiment', help="experiment dir root")
