@@ -95,6 +95,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.cuda = not args.no_cuda and torch.cuda.is_available()
+    print("Train with cuda:", args.cuda)
     trainer = Trainer(args)
     torch.manual_seed(args.ramdn_seed)
 

@@ -4,15 +4,15 @@ import torch.nn as nn
 
 class DeviationLoss(nn.Module):
 
-    def __init__(self,cuda):
-        self.cuda = cuda
+    def __init__(self, has_cuda):
+        self.has_cuda = has_cuda
         super().__init__()
 
     def forward(self, y_pred, y_true):
         confidence_margin = 5.
         # size=5000 is the setting of l in algorithm 1 in the paper
         ref = torch.normal(mean=0., std=torch.full([5000], 1.))
-        if self.cuda:
+        if self.has_cuda:
             ref = ref.cuda()
         dev = (y_pred - torch.mean(ref)) / torch.std(ref)
         inlier_loss = torch.abs(dev)
