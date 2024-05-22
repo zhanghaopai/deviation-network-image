@@ -1,15 +1,15 @@
-import numpy as np
-import torch
-import torch.nn as nn
-
 import argparse
 import os
 
-from dataloaders.dataloader import build_dataloader
-from modeling.net import SemiADNet
+import numpy as np
+import torch
 from tqdm import tqdm
-from utils import aucPerformance
+
+from dataloaders.dataloader import build_dataloader
 from modeling.layers import build_criterion
+from modeling.net import SemiADNet
+from utils import aucPerformance
+
 
 class Trainer(object):
 
@@ -28,8 +28,8 @@ class Trainer(object):
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=10, gamma=0.1)
 
         if args.cuda:
-           self.model = self.model.cuda()
-           self.criterion = self.criterion.cuda()
+            self.model = self.model.cuda()
+            self.criterion = self.criterion.cuda()
 
     def train(self, epoch):
         train_loss = 0.0
@@ -74,6 +74,7 @@ class Trainer(object):
     def save_weights(self, filename):
         torch.save(self.model.state_dict(), os.path.join(args.experiment_dir, filename))
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", type=int, default=48, help="batch size used in SGD")
@@ -113,4 +114,3 @@ if __name__ == '__main__':
         trainer.train(epoch)
     trainer.eval()
     trainer.save_weights(args.weight_name)
-
