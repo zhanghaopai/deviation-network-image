@@ -4,8 +4,8 @@ def print_scatter(y_score):
     x_values = [ i for i in range(len(y_score))]
     plt.scatter(y_score, x_values)
     plt.title('Simple Scatter Plot')
-    plt.xlabel('X Axis')
-    plt.ylabel('Y Axis')
+    plt.xlabel('score')
+    plt.ylabel('image index')
 
     # 显示图表
     plt.show()
