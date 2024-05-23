@@ -8,7 +8,8 @@ from tqdm import tqdm
 from dataloaders.dataloader import build_dataloader
 from modeling.layers import build_criterion
 from modeling.net import SemiADNet
-from utils import aucPerformance
+from utils import aucPerformance, fnr_performance, fpr_performance
+from visualization.scatter import print_scatter
 
 
 class Trainer(object):
@@ -23,8 +24,9 @@ class Trainer(object):
         self.model = SemiADNet(args)
 
         self.criterion = build_criterion(args.criterion, args.cuda)
-
+        # 优化器
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0002, weight_decay=1e-5)
+        # 调整学习率
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=10, gamma=0.1)
 
         if args.cuda:
@@ -40,7 +42,8 @@ class Trainer(object):
             if self.args.cuda:
                 image, target = image.cuda(), target.cuda()
 
-            output = self.model(image)
+            output,_ = self.model(image)
+            # loss
             loss = self.criterion(output, target.unsqueeze(1).float())
             self.optimizer.zero_grad()
             loss.backward()
@@ -55,21 +58,33 @@ class Trainer(object):
         self.model.eval()
         tbar = tqdm(self.test_loader, desc='\r')
         test_loss = 0.0
-        total_pred = np.array([])
+        total_score = np.array([])
         total_target = np.array([])
+        total_pred = np.array([])
         for i, sample in enumerate(tbar):
             image, target = sample['image'], sample['label']
             if self.args.cuda:
                 image, target = image.cuda(), target.cuda()
             with torch.no_grad():
-                output = self.model(image.float())
-            loss = self.criterion(output, target.unsqueeze(1).float())
+                score, y_pred = self.model(image.float())
+            # 计算loss
+            loss = self.criterion(score, target.unsqueeze(1).float())
             test_loss += loss.item()
             tbar.set_description('Test loss: %.3f' % (test_loss / (i + 1)))
-            total_pred = np.append(total_pred, output.data.cpu().numpy())
+            total_score = np.append(total_score, score.data.cpu().numpy())
             total_target = np.append(total_target, target.cpu().numpy())
-        roc, pr = aucPerformance(total_pred, total_target)
-        return roc, pr
+            total_pred = np.append(total_pred, y_pred.cpu().numpy())
+        roc, pr = aucPerformance(total_score, total_target)
+        # print("total_score:", total_score)
+        # print("total_target:", total_target)
+        # print("total_pred:", total_pred)
+        # print("total_pred_len:", len(total_pred))
+        # 绘制**异常分数**图像
+        print_scatter(total_score)
+        fpr = fpr_performance(y_true=total_target, y_pred=total_pred)
+        fnr = fnr_performance(y_true=total_target, y_pred=total_pred)
+        return roc, pr, fpr, fnr
+
 
     def save_weights(self, filename):
         torch.save(self.model.state_dict(), os.path.join(args.experiment_dir, filename))
