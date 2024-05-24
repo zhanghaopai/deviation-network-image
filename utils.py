@@ -10,7 +10,7 @@ In The 25th ACM SIGKDDConference on Knowledge Discovery and Data Mining (KDD ’
 August4–8, 2019, Anchorage, AK, USA.ACM, New York, NY, USA, 10 pages. https://doi.org/10.1145/3292500.3330871
 """
 
-from sklearn.metrics import average_precision_score, roc_auc_score
+from sklearn.metrics import average_precision_score, roc_auc_score, roc_curve
 import numpy as np
 
 
@@ -21,17 +21,13 @@ def aucPerformance(mse, labels, prt=True):
         print("AUC-ROC: %.4f, AUC-PR: %.4f" % (roc_auc, ap))
     return roc_auc, ap
 
-def fpr_performance(y_true, y_pred):
-    false_positives = np.sum((y_true == 0) & (y_pred == 1))
-    true_negatives = np.sum((y_true == 0) & (y_pred == 0))
-    if false_positives + true_negatives > 0:
-        fpr = false_positives / (false_positives + true_negatives)
-    else:
-        fpr = 0  # 避免除以零的情况
-    print("False Positive Rate (误报率): {:.4f}".format(fpr))
+def fpr_performance(y_true, y_score):
+    fpr, tpr, thresholds =roc_curve(y_true, y_score)
     return fpr
 
-def fnr_performance(y_true, y_pred):
+def fnr_performance(y_true, y_score):
+    fpr, tpr, thresholds = roc_curve(y_true, y_score)
+    y_pred = (y_score >= thresholds).astype(int)
     true_positives = np.sum((y_true == 1) & (y_pred == 1))
     false_negatives = np.sum((y_true == 1) & (y_pred == 0))
     if true_positives + false_negatives > 0:
