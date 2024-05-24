@@ -28,10 +28,10 @@ class SemiADNet(nn.Module):
             scores = self.conv(feature)
             if self.args.topk > 0:
                 # 只取分数topK
-                scores = scores.view(int(scores.size(0)), -1)
+                scores = scores.view(int(scores.size(0)), -1)   # scores:[48, 1, 14, 14] ---> scores[48, 196]
                 topk = max(int(scores.size(1) * self.args.topk), 1)
-                scores = torch.topk(torch.abs(scores), topk, dim=1)[0]
-                scores = torch.mean(scores, dim=1).view(-1, 1)
+                scores = torch.topk(torch.abs(scores), topk, dim=1)[0] # score:[48, topk]
+                scores = torch.mean(scores, dim=1).view(-1, 1)         # score:[48, 1]
             else:
                 scores = scores.view(int(scores.size(0)), -1)
                 scores = torch.mean(scores, dim=1).view(-1, 1)
