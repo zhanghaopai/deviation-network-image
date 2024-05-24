@@ -8,7 +8,7 @@ from tqdm import tqdm
 from dataloaders.dataloader import build_dataloader
 from modeling.layers import build_criterion
 from modeling.net import SemiADNet
-from utils import aucPerformance, fnr_performance, fpr_performance
+from utils import aucPerformance, fpr_and_fnr_performance
 from visualization.scatter import print_scatter
 
 
@@ -42,7 +42,7 @@ class Trainer(object):
             if self.args.cuda:
                 image, target = image.cuda(), target.cuda()
 
-            output,_ = self.model(image)
+            output, _ = self.model(image)
             # loss
             loss = self.criterion(output, target.unsqueeze(1).float())
             self.optimizer.zero_grad()
@@ -81,10 +81,8 @@ class Trainer(object):
         # print("total_pred_len:", len(total_pred))
         # 绘制**异常分数**图像
         print_scatter(total_score)
-        fpr = fpr_performance(y_true=total_target, y_pred=total_pred)
-        fnr = fnr_performance(y_true=total_target, y_pred=total_pred)
-        return roc, pr, fpr, fnr
-
+        fpr_and_fnr_performance(y_true=total_target, y_score=total_score)
+        return roc, pr
 
     def save_weights(self, filename):
         torch.save(self.model.state_dict(), os.path.join(args.experiment_dir, filename))
