@@ -42,7 +42,7 @@ class Trainer(object):
             if self.args.cuda:
                 image, target = image.cuda(), target.cuda()
 
-            output, _ = self.model(image)
+            output = self.model(image)
             # loss
             loss = self.criterion(output, target.unsqueeze(1).float())
             self.optimizer.zero_grad()
@@ -60,20 +60,18 @@ class Trainer(object):
         test_loss = 0.0
         total_score = np.array([])
         total_target = np.array([])
-        total_pred = np.array([])
         for i, sample in enumerate(tbar):
             image, target = sample['image'], sample['label']
             if self.args.cuda:
                 image, target = image.cuda(), target.cuda()
             with torch.no_grad():
-                score, y_pred = self.model(image.float())
+                score = self.model(image.float())
             # 计算loss
             loss = self.criterion(score, target.unsqueeze(1).float())
             test_loss += loss.item()
             tbar.set_description('Test loss: %.3f' % (test_loss / (i + 1)))
             total_score = np.append(total_score, score.data.cpu().numpy())
             total_target = np.append(total_target, target.cpu().numpy())
-            total_pred = np.append(total_pred, y_pred.cpu().numpy())
         roc, pr = aucPerformance(total_score, total_target)
         # print("total_score:", total_score)
         # print("total_target:", total_target)

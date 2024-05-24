@@ -38,7 +38,6 @@ class SemiADNet(nn.Module):
 
             image_pyramid.append(scores)
         scores = torch.cat(image_pyramid, dim=1)
-        _, y_pred = torch.max(scores, dim=1)
         score = torch.mean(scores, dim=1)
         score = score.view(-1, 1)
-        return score, y_pred
+        return score
