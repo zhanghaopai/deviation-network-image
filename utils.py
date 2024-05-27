@@ -23,8 +23,8 @@ def aucPerformance(mse, labels, prt=True):
 
 def fpr_and_fnr_performance(y_true, y_score):
     _, _,thresholds =roc_curve(y_true, y_score)
-    balance_fnr=0.0
-    balance_fpr=0.0
+    balance_fnr=-0.1
+    balance_fpr=-0.1
     min=1000000.0
     index=0
     for i, threshold in enumerate(thresholds):

@@ -31,8 +31,8 @@ for dir in normal_dirs:
             normal_images.append(image_data[:, i*256:(i+1)*256 ,:])
             normal_fname.append(dir + '_' + image_name + '_' + str(i))
 
-outlier_root = os.path.join(args.dataset_root, 'Defect_images/Defect_images')
-label_root = os.path.join(args.dataset_root, 'Mask_images/Mask_images')
+outlier_root = os.path.join(args.dataset_root, 'Defect_images')
+label_root = os.path.join(args.dataset_root, 'Mask_images')
 files = os.listdir(os.path.join(outlier_root))
 for image in files:
     split_images = list()
